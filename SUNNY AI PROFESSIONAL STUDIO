@@ -1,0 +1,32 @@
+import React, { useState } from "react"; import { Button } from "@/components/ui/button"; import { Input } from "@/components/ui/input"; import { Textarea } from "@/components/ui/textarea";
+
+export default function HomePage() { const [prompt, setPrompt] = useState(""); const [imageUrl, setImageUrl] = useState(""); const [loading, setLoading] = useState(false);
+
+const generateImage = async () => { setLoading(true); setImageUrl(""); try { const res = await fetch("https://api.openai.com/v1/images/generations", { method: "POST", headers: { "Content-Type": "application/json", Authorization: Bearer YOUR_OPENAI_API_KEY, }, body: JSON.stringify({ prompt, n: 1, size: "512x512", }), }); const data = await res.json(); setImageUrl(data.data[0].url); } catch (error) { alert("Error generating image"); } finally { setLoading(false); } };
+
+return ( <div className="min-h-screen p-4 bg-gray-100 flex flex-col items-center"> <h1 className="text-3xl font-bold mb-6">AI Media Generator</h1>
+
+<Textarea
+    value={prompt}
+    onChange={(e) => setPrompt(e.target.value)}
+    placeholder="Enter your prompt for image generation"
+    className="w-full max-w-xl mb-4"
+  />
+
+  <Button onClick={generateImage} disabled={loading || !prompt}>
+    {loading ? "Generating..." : "Generate Image"}
+  </Button>
+
+  {imageUrl && (
+    <div className="mt-6">
+      <img
+        src={imageUrl}
+        alt="Generated"
+        className="rounded-xl shadow-md w-64 h-64 object-cover"
+      />
+    </div>
+  )}
+</div>
+
+); }
+
